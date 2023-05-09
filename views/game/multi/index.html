@@ -25,7 +25,7 @@
   </div>
 </div>
 <script>
-  const ws = new WebSocket("ws://localhost:3001");
+  const ws = new WebSocket("ws://10.94.121.14:3001");
   const $myRoom = document.querySelector('#room');
   const $myNick = document.querySelector('#myNick');
   const $myMsg = document.querySelector('#myMsg');
@@ -64,10 +64,16 @@
     return isFind;
   }
 
+  const changeColor = (word) => {
+    words.map(w => {
+      if(word === w.word) 
+      w.color = "#000"
+    })
+  }
+
   const clearBoard = () => {
     ctx.clearRect(0, 0, 1000, 500);
   }
-  
 
   setInterval(() => {
     clearBoard();
@@ -85,22 +91,28 @@
   
   const receiveMsg = (e) =>{
     const msg = JSON.parse(e.data)
-    console.log(msg);
+    // console.log(msg);
     if(msg.room){    
       $chatLog.innerHTML += `${msg.room} - ${msg.nick} : ${msg.msg}\n` ;
       $chatLog.scrollTop = $chatLog.scrollHeight;
+      changeColor(msg.msg);
     }
-    else
+    else{
       words.push(new Word(msg.word, Math.floor(Math.random()*500), 20, "#ddd"));
-
+    }
   }
   ws.onmessage = receiveMsg;
 
   document.addEventListener('keyup', (e)=>{
-    if(e.key == "Enter") myMsgSend();
+    if(e.key == "Enter"){
+      changeColor($myMsg.value);
+      myMsgSend();
+      if(findWord($myMsg.value)){
+        const ans = {word : $myMsg.value};
+        ws.send(JSON.stringify(ans));
+      }
+    }
   })
 
 </script>
-
-
 {% endblock %}
