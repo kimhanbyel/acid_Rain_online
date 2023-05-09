@@ -54,7 +54,16 @@
   }
 
   const words = [];
-  
+
+  const findWord = (word) => {
+    let isFind = false;
+    words.map(w =>{
+      if(word === w.word)  isFind = true;
+      else            return false;
+    })
+    return isFind;
+  }
+
   const clearBoard = () => {
     ctx.clearRect(0, 0, 1000, 500);
   }
