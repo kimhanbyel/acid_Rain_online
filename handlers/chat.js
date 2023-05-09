@@ -12,16 +12,21 @@ const randomWord = () => {
   return data1[a] + data2[b] + data3[c];
 }
 
+global.randWord = '';
+
+setInterval(() => {
+  global.randWord = { word : randomWord()};
+}, 1000);
+
 wss.on("connection", ws =>{
   console.log(`연결되었습니다.`);
   console.log(wss.clients.size);
 
   setInterval(() => {
-    let randWord = { word : randomWord()};
-    console.log(randWord);
-    ws.send(JSON.stringify(randWord));
+    //console.log(global.randWord);
+    ws.send(JSON.stringify(global.randWord));
   }, 1000);
-
+  
   ws.on("message", data =>{
     ws.room = JSON.parse(data).room;
     for(client of wss.clients){

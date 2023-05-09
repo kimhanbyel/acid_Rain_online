@@ -25,10 +25,6 @@
   </div>
 </div>
 <script>
-  document.addEventListener('keyup', (e)=>{
-    if(e.keyCode == 13) myMsgSend();
-  })
-
   const ws = new WebSocket("ws://localhost:3001");
   const $myRoom = document.querySelector('#room');
   const $myNick = document.querySelector('#myNick');
@@ -50,7 +46,6 @@
     }
     draw(ctx){  
       ctx.fillStyle = this.color;
-      console.log(this);
       ctx.fillText(this.word, this.x , this.y);
     }
     down(){
@@ -67,7 +62,6 @@
 
   setInterval(() => {
     clearBoard();
-    words.push(new Word(randomWord(), Math.floor(Math.random()*500), 20, "#ddd"));
     words.map(w=>{
       w.draw(ctx);
       w.down();
@@ -75,7 +69,7 @@
   }, 1000);
   
   const myMsgSend = () =>{
-    const myMsg = {room : $myRoom.value, nick : $myNick.value, msg : $myMsg.value};
+    const myMsg = {room : $myRoom.value, nick : $myNick.innerHTML, msg : $myMsg.value};
     ws.send(JSON.stringify(myMsg));
     $myMsg.value="";
   }
@@ -83,11 +77,19 @@
   const receiveMsg = (e) =>{
     const msg = JSON.parse(e.data)
     console.log(msg);
-    $chatLog.innerHTML += `${msg.room} - ${msg.nick} : ${msg.msg}\n` ;
-    $chatLog.scrollTop = $chatLog.scrollHeight;
+    if(msg.room){    
+      $chatLog.innerHTML += `${msg.room} - ${msg.nick} : ${msg.msg}\n` ;
+      $chatLog.scrollTop = $chatLog.scrollHeight;
+    }
+    else
+      words.push(new Word(msg.word, Math.floor(Math.random()*500), 20, "#ddd"));
+
   }
   ws.onmessage = receiveMsg;
 
+  document.addEventListener('keyup', (e)=>{
+    if(e.key == "Enter") myMsgSend();
+  })
 
 </script>
 
