@@ -59,16 +59,15 @@
   }
 
   const words = [];
-
-  for(let i=0; i<5; i++)
-    words.push(new Word("안녕", i*50, 20, "#ddd"));
-
+  
   const clearBoard = () => {
     ctx.clearRect(0, 0, 1000, 500);
   }
   
+
   setInterval(() => {
     clearBoard();
+    words.push(new Word(randomWord(), Math.floor(Math.random()*500), 20, "#ddd"));
     words.map(w=>{
       w.draw(ctx);
       w.down();
@@ -83,6 +82,7 @@
   
   const receiveMsg = (e) =>{
     const msg = JSON.parse(e.data)
+    console.log(msg);
     $chatLog.innerHTML += `${msg.room} - ${msg.nick} : ${msg.msg}\n` ;
     $chatLog.scrollTop = $chatLog.scrollHeight;
   }
